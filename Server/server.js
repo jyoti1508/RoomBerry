@@ -14,14 +14,25 @@ connectDB();
 connectCloudinary();
 
 const app = express();
+
+// CORS + JSON
 app.use(cors());
 app.use(express.json());
 
-// --- Clerk Webhook MUST be above clerkMiddleware ---
-app.use("/api/clerk", clerkWebhooks);
+// --- Clerk Webhook MUST receive raw body
+import bodyParser from "body-parser";
+app.post(
+  "/api/clerk",
+  bodyParser.raw({ type: "application/json" }),
+  clerkWebhooks
+);
 
-// Clerk middleware for all other protected routes
-app.use(clerkMiddleware());
+// Clerk middleware for protected routes (pass secretKey explicitly!)
+app.use(
+  clerkMiddleware({
+    secretKey: process.env.CLERK_SECRET_KEY,
+  })
+);
 
 // Routers
 app.get("/", (req, res) => res.send("API is working"));

@@ -1,27 +1,40 @@
-//GET/api/user
+// controllers/userController.js
+
 export const getUserData = async (req, res) => {
   try {
     const role = req.user.role;
-    const recentSearchCities = req.user.recentSearchCities;
-    res.json({ success: true, role, recentSearchCities });
+    const recentSearchedCities = req.user.recentSearchedCities;
+
+    res.json({ success: true, role, recentSearchedCities });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
 
-// Store User Recent Searched Cities
 export const storeRecentSearchCities = async (req, res) => {
   try {
-    const { recentSearchCities } = req.body;
-    const user = await req.user;
+    const { recentSearchCities } = req.body; // This is the city sent by frontend
+    const user = req.user;
 
-    if (user.recentSearchCities.length < 3) {
-      user.recentSearchCities.push(recentSearchCities);
-    } else {
-      user.recentSearchCities.shift();
-      user.recentSearchCities.push(recentSearchCities);
+    if (!recentSearchCities) {
+      return res.json({ success: false, message: "City name required" });
     }
+
+    // 1. Remove duplicates
+    user.recentSearchedCities = user.recentSearchedCities.filter(
+      (city) => city !== recentSearchCities
+    );
+
+    // 2. Add new city
+    user.recentSearchedCities.push(recentSearchCities);
+
+    // 3. Keep only last 3
+    if (user.recentSearchedCities.length > 3) {
+      user.recentSearchedCities.shift();
+    }
+
     await user.save();
+
     res.json({ success: true, message: "City added" });
   } catch (error) {
     res.json({ success: false, message: error.message });
