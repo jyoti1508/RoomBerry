@@ -2,7 +2,8 @@ import { react, useState } from "react";
 import Title from "../../components/Title";
 import { assets } from "../../assets/assets";
 import { useAppContext } from "../../context/AppContext";
-import toast from "react-hot-toast";
+import {toast} from "react-hot-toast";
+
 
 const AddRoom = () => {
   const { axios, getToken } = useAppContext();
@@ -46,7 +47,7 @@ const AddRoom = () => {
       formData.append("pricePerNight", inputs.pricePerNight);
 
       //Converting Amenities to Array & keeping only enabled Amenities
-      const amenities = Object.key(inputs.amenities).filter(
+      const amenities = Object.keys(inputs.amenities).filter(
         (key) => inputs.amenities[key]
       );
       formData.append("amenities", JSON.stringify(amenities));
@@ -56,8 +57,9 @@ const AddRoom = () => {
         images[key] && formData.append("images", images[key]);
       });
       const { data } = await axios.post("/api/rooms/", formData, {
-        headers: { Authorization: `Bearer ${await getToken()}` },
+        headers: { Authorization: `Bearer ${await getToken()}` }
       });
+      console.log("Add Room Response:", data);
 
       if (data.success) {
         toast.success(data.message);

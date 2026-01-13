@@ -23,18 +23,18 @@ import User from "../models/User.js";
 export const registerHotel = async (req, res) => {
   try {
     const { name, city, address, contact } = req.body;
-    if (!req.user)
+     if (!req.auth() || !req.auth().userId) {
       return res
         .status(401)
         .json({ success: false, message: "Not authenticated" });
-
+     }
     const newHotel = await Hotel.create({
       name,
       city,
       address,
       contact,
 
-      owner: req.user._id,
+      owner: req.auth().userId,
     });
 
     res.json({ success: true, hotel: newHotel });

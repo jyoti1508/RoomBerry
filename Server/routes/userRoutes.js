@@ -11,17 +11,7 @@ const router = express.Router();
 
 router.post("/sync-user", async (req, res) => {
   try {
-
-     console.log("SYNC USER BODY 👉", req.body);
-
     const { clerkId, email, name, image } = req.body;
-
-    if (!clerkId || !email) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing clerkId or email",
-      });
-    }
 
     let user = await User.findOne({ clerkId });
 
@@ -32,7 +22,6 @@ router.post("/sync-user", async (req, res) => {
         username: name,
         image,
       });
-       console.log("✅ USER CREATED");
     }
 
     res.status(200).json({ success: true, user });
@@ -42,7 +31,7 @@ router.post("/sync-user", async (req, res) => {
   }
 });
 
-// router.get("/", protect, getUserData);
-// router.post("/store-recent-search", protect, storeRecentSearchCities);
+router.get("/", protect, getUserData);
+router.post("/store-recent-search", protect, storeRecentSearchCities);
 
 export default router;

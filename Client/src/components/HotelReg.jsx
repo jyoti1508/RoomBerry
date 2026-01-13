@@ -12,7 +12,7 @@ const HotelReg = () => {
   const [city, setCity] = useState("");
 
   const onSubmitHandler = async (event) => {
-    console.log("TOKEN:", await getToken());
+    
 
     try {
       event.preventDefault();

@@ -11,7 +11,7 @@ const SyncUser = () => {
     console.log("🔥 CLERK USER:", user.id);
 
     axios
-      .post("http://localhost:3000/api/users/sync-user", {
+      .post("http://localhost:3000/api/user/sync-user", {
         clerkId: user.id,
         email: user.primaryEmailAddress.emailAddress,
         username: user.fullName,

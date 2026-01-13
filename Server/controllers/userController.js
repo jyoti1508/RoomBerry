@@ -3,9 +3,9 @@
 export const getUserData = async (req, res) => {
   try {
     const role = req.user.role;
-    const recentSearchedCities = req.user.recentSearchedCities;
+    const recentSearchCities = req.user.recentSearchCities;
 
-    res.json({ success: true, role, recentSearchedCities });
+    res.json({ success: true, role, recentSearchCities });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
@@ -21,16 +21,16 @@ export const storeRecentSearchCities = async (req, res) => {
     }
 
     // 1. Remove duplicates
-    user.recentSearchedCities = user.recentSearchedCities.filter(
+    user.recentSearchCities = user.recentSearchCities.filter(
       (city) => city !== recentSearchCities
     );
 
     // 2. Add new city
-    user.recentSearchedCities.push(recentSearchCities);
+    user.recentSearchCities.push(recentSearchCities);
 
     // 3. Keep only last 3
-    if (user.recentSearchedCities.length > 3) {
-      user.recentSearchedCities.shift();
+    if (user.recentSearchCities.length > 3) {
+      user.recentSearchCities.shift();
     }
 
     await user.save();

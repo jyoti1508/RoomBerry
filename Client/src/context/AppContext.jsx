@@ -14,9 +14,29 @@ export const AppProvider = ({ children }) => {
   const { user } = useUser();
   const { getToken } = useAuth();
 
-  const [isOwner, setIsOwner] = useState(false);
+ const [isOwner, setIsOwner] = useState(false);
+const [ownerLoading, setOwnerLoading] = useState(true);
+
   const [showHotelReg, setShowHotelReg] = useState(false);
   const [searchedCities, setSearchedCities] = useState([]);
+
+  const syncUser = async () => {
+  const token = await getToken();
+
+  await axios.post(
+    "/api/user/sync-user",
+    {
+      clerkId: user.id,
+      email: user.primaryEmailAddress.emailAddress,
+      username: user.fullName,
+      image: user.imageUrl,
+    },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+};
+
 
   const fetchUser = async () => {
     try {
@@ -26,20 +46,28 @@ export const AppProvider = ({ children }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (data.success) {
-        setIsOwner(data.role === "hotelOwner");
-        setSearchedCities(data.recentSearchedCities);
-      } else {
-        setTimeout(fetchUser, 5000);
-      }
+      if (data?.success && data?.user) {
+      setIsOwner(data.user.role === "hotelOwner");
+      setSearchedCities(data.user.recentSearchCities || []);
+    }
     } catch (error) {
       toast.error(error.message);
-    }
+    }finally {
+    setOwnerLoading(false); // 🔥 IMPORTANT
+  }
   };
 
   useEffect(() => {
-    if (user) fetchUser();
-  }, [user]);
+  if (!user) return;
+
+  const initUser = async () => {
+    await syncUser();   // 1️⃣ MongoDB me save
+    await fetchUser();  // 2️⃣ MongoDB se read
+  };
+
+  initUser();
+}, [user]);
+
 
   const value = {
     currency,
@@ -48,6 +76,7 @@ export const AppProvider = ({ children }) => {
     getToken,
     isOwner,
     setIsOwner,
+    ownerLoading,
     axios,
     showHotelReg,
     setShowHotelReg,
