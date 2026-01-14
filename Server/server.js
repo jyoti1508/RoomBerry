@@ -5,8 +5,6 @@ import bodyParser from "body-parser";
 import { clerkMiddleware } from "@clerk/express";
 
 import connectDB from "./configs/db.js";
-import connectCloudinary from "./configs/cloudinary.js";
-
 import clerkWebhooks from "./controllers/clerkWebhooks.js";
 import userRouter from "./routes/userRoutes.js";
 import hotelRouter from "./routes/hotelRoutes.js";
@@ -48,7 +46,7 @@ app.use("/api/bookings", bookingRouter);
 const startServer = async () => {
   try {
     await connectDB();          
-    connectCloudinary();        
+            
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

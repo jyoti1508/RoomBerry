@@ -1,6 +1,7 @@
 import Hotel from "../models/Hotel.js";
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "../configs/cloudinary.js";
 import Room from "../models/Room.js";
+
 
 
 // API to create a new room for a hotel
@@ -11,6 +12,7 @@ export const createRoom = async (req, res) => {
     if (!hotel) {
       return res.json({ success: false, message: "No Hotel Found" });
     }
+
 
     // upload images to cloudinary
     const uploadImages = req.files.map(async (file) => {
@@ -80,5 +82,6 @@ export const toggleRoomAvailability = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
 
 

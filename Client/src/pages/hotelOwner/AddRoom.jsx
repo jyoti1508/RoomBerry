@@ -1,4 +1,5 @@
-import { react, useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Title from "../../components/Title";
 import { assets } from "../../assets/assets";
 import { useAppContext } from "../../context/AppContext";
@@ -6,6 +7,7 @@ import {toast} from "react-hot-toast";
 
 
 const AddRoom = () => {
+  const navigate = useNavigate();
   const { axios, getToken } = useAppContext();
 
   const [images, setImages] = useState({
@@ -46,7 +48,7 @@ const AddRoom = () => {
       formData.append("roomType", inputs.roomType);
       formData.append("pricePerNight", inputs.pricePerNight);
 
-      //Converting Amenities to Array & keeping only enabled Amenities
+      // Converting Amenities to Array & keeping only enabled Amenities
       const amenities = Object.keys(inputs.amenities).filter(
         (key) => inputs.amenities[key]
       );
@@ -63,6 +65,8 @@ const AddRoom = () => {
 
       if (data.success) {
         toast.success(data.message);
+        
+        navigate("/owner/list-room");
         setInputs({
           roomType: "",
           pricePerNight: 0,
@@ -159,7 +163,8 @@ const AddRoom = () => {
          text-gray-400 max-w-sm"
         >
           {Object.keys(inputs.amenities).map((amenity, index) => (
-            <div key={index}>
+            <div key={amenity}>
+
               <input
                 type="checkbox"
                 id={`amenities${index + 1}`}
